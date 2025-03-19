@@ -148,6 +148,42 @@ function manipulateTodo(e) {
     const task = todoDiv.innerText;
     deleteTodo(task);
   }
+
+  if (target.classList.contains("edit-btn")) {
+    const todoDiv = target.parentElement;
+    const todoText = todoDiv.innerText;
+
+    const editInput = document.createElement("input");
+    editInput.type = "text";
+    editInput.value = todoText;
+    editInput.classList.add("edit-input");
+
+    todoDiv.querySelector(".todo-item").replaceWith(editInput);
+
+    const saveButton = document.createElement("button");
+    saveButton.classList.add("save-btn");
+    saveButton.innerHTML = `<i class="fa-solid fa-floppy-disk"></i>`;
+    todoDiv.querySelector(".edit-btn").replaceWith(saveButton);
+    // saveButton
+
+    const saveTask = () => {
+      const newTodoText = editInput.value.trim();
+      if (newTodoText !== "") {
+        updateTodo(todoText, newTodoText);
+
+        const listItem = document.createElement("li");
+        listItem.classList.add("todo-item");
+        listItem.textContent = newTodoText;
+        todoDiv.querySelector(".edit-input").replaceWith(listItem);
+
+        const editButton = document.createElement("button");
+        editButton.classList.add("edit-btn");
+        editButton.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
+        todoDiv.querySelector(".save-btn").replaceWith(editButton);
+      }
+    };
+    saveButton.addEventListener("click", saveTask);
+  }
 }
 
 // Function that updates the ToDoStatus
@@ -167,6 +203,15 @@ function deleteTodo(todo) {
     return toDoObject.todo === todo;
   });
   todosArray.splice(todoObjectIndex, 1);
+  localStorage.setItem("todos", JSON.stringify(todosArray));
+}
+
+function updateTodo(oldTodo, newTodo) {
+  const todosArray = getTodosFromLocalStorage();
+  const todoObject = todosArray.find((todoObject) => {
+    return todoObject.todo === oldTodo;
+  });
+  todoObject.todo = newTodo;
   localStorage.setItem("todos", JSON.stringify(todosArray));
 }
 
